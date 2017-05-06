@@ -49,7 +49,12 @@ class RichEditorExample extends React.Component {
 
     this.focus = () => this.refs.editor.focus();
     this.onChange = (editorState) => {
-      this.dirty = true;
+      // const t0 = performance.now();
+      if (this.state.editorState.getCurrentContent() !== editorState.getCurrentContent()) {
+        this.dirty = true;
+      }
+      // const t1 = performance.now();
+      // console.log("compare old and new content took " + (t1 - t0) + " milliseconds.")
       this.setState({ editorState });
     };
 
