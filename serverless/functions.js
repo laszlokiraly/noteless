@@ -2,9 +2,13 @@ const doc = require("dynamodb-doc");
 const dynamo = new doc.DynamoDB();
 const version = "v7";
 
-/*
-* Notes notes
-*/
+/**
+ * returns all notes of the authenticated user
+ * @param  {[type]}   event    AWS Lambda uses this parameter to pass in event data to the handler.
+ * @param  {[type]}   context  http://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-context.html
+ * @param  {Function} callback http://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-handler.html#nodejs-prog-model-handler-callback
+ * @return {[type]}            List of notes of the authenticated user
+ */
 module.exports.getNotes = (event, context, callback) => {
 
   const response = (err, res) => callback(null, {
@@ -30,9 +34,13 @@ module.exports.getNotes = (event, context, callback) => {
   dynamo.query(params, response);
 };
 
-/*
-* Notes notes
-*/
+/**
+ * Note will be save if it has no timestamp yet, otherwise it will be updated
+ * @param  {[type]}   event    AWS Lambda uses this parameter to pass in event data to the handler.
+ * @param  {[type]}   context  http://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-context.html
+ * @param  {Function} callback http://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-handler.html#nodejs-prog-model-handler-callback
+ * @return {[type]}            Note with updated timestamp(s), client and server uuid and title (content and userid are omitted)
+ */
 module.exports.saveOrUpdateNote = (event, context, callback) => {
 
   // http://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
@@ -96,9 +104,13 @@ module.exports.saveOrUpdateNote = (event, context, callback) => {
   }
 };
 
-/*
-* Notes notes
-*/
+/**
+ * Delete Note belonging to authenticated user
+ * @param  {[type]}   event    AWS Lambda uses this parameter to pass in event data to the handler.
+ * @param  {[type]}   context  http://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-context.html
+ * @param  {Function} callback http://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-handler.html#nodejs-prog-model-handler-callback
+ * @return {[type]}            Empty Response
+ */
 module.exports.deleteNote = (event, context, callback) => {
 
   const response = (err) => callback(null, {
