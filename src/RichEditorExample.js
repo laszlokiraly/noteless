@@ -5,8 +5,10 @@ import Draft from "draft-js";
 import { stateToHTML } from "draft-js-export-html";
 import { stateFromHTML } from "draft-js-import-html";
 import "./RichEditorExample.css";
+import Editor from "draft-js-plugins-editor";
+import createLinkifyPlugin from "draft-js-linkify-plugin";
 
-const { Editor, EditorState, RichUtils, ContentState } = Draft;
+const { EditorState, RichUtils, ContentState } = Draft;
 
 // Custom overrides for "code" style.
 const styleMap = {
@@ -17,6 +19,17 @@ const styleMap = {
     padding: 1
   }
 };
+
+const linkifyPlugin = createLinkifyPlugin({
+  component: (props) => (
+    // eslint-disable-next-line no-alert, jsx-a11y/anchor-has-content
+    <a {...props} onClick={(event) => {
+      window.open(event.target.textContent, "_blank");
+    }}
+    />
+  )
+});
+const plugins = [linkifyPlugin];
 
 function getBlockStyle(block) {
   switch (block.getType()) {
@@ -132,6 +145,7 @@ class RichEditorExample extends React.Component {
             onChange={this.onChange}
             onTab={this.onTab}
             ref="editor"
+            plugins={plugins}
             spellCheck={true}
           />
         </div>

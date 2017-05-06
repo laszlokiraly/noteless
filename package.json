@@ -10,9 +10,12 @@
     "draft-js": "^0.10.0",
     "draft-js-export-html": "^0.5.2",
     "draft-js-import-html": "^0.3.2",
+    "draft-js-linkify-plugin": "^2.0.0-beta10",
+    "draft-js-plugins-editor": "^2.0.0-beta10",
     "firebase": "^3.9.0",
     "immutability-helper": "^2.2.0",
     "react": "^15.5.4",
+    "react-alert": "^2.0.0",
     "react-dom": "^15.5.4",
     "react-google-login": "^2.8.9",
     "sanitize-html": "^1.14.1"

@@ -12,6 +12,7 @@ import ModalAlert from "./ModalAlert";
 import guid from "./helper";
 import update from "immutability-helper";
 import NotesTab from "./NotesTab";
+import AlertContainer from "react-alert";
 
 class App extends Component {
   constructor(props) {
@@ -37,6 +38,34 @@ class App extends Component {
     this.notesApi = NotesApiFactory.create(APPCONFIG.PROVIDERS[0]);
 
     this.setSelectedNote = this.setSelectedNote.bind(this);
+  }
+
+  alertOptions = {
+    offset: 14,
+    position: "bottom right",
+    theme: "light",
+    time: 3000,
+    transition: "fade"
+  }
+
+  alertNoteSaved(title) {
+    if (!title || title === "") {
+      title = "newly created note";
+    }
+    this.msg.show(`${title} saved`, {
+      time: 3000,
+      type: "success"
+    });
+  }
+
+  alertNoteDeleted(title) {
+    if (!title || title === "") {
+      title = "note without title";
+    }
+    this.msg.show(`${title} deleted`, {
+      time: 3000,
+      type: "success"
+    });
   }
 
   componentWillMount() {
@@ -148,6 +177,7 @@ class App extends Component {
       if (this.state.loggedIn === false) {
         return;
       }
+      this.alertNoteSaved(selectedNote.title);
       const responseNote = response.data.body;
       this.correct(responseNote);
       if (this.selectedNote.clientUuid === responseNote.clientUuid) {
@@ -284,6 +314,7 @@ class App extends Component {
       if (this.state.loggedIn === false) {
         return;
       }
+      this.alertNoteDeleted(noteToDelete.title);
       this.deleteNoteFromNotes(noteToDelete);
     }).catch((error) => {
       ModalAlert.alert("Delete failed. Please try again later.");
@@ -305,8 +336,10 @@ class App extends Component {
             : ""
           }
           {this.state.loggedIn ?
-            <NotesTab list={this.state.notes} onTabClicked={this.handleNoteClicked}/>
-            : ""
+            <AlertContainer ref={(ref) => { this.msg = ref; }} {...this.alertOptions} /> : ""
+          }
+          {this.state.loggedIn ?
+            <NotesTab list={this.state.notes} onTabClicked={this.handleNoteClicked}/> : ""
           }
           <div className="login-out">
             {!this.state.loggedIn

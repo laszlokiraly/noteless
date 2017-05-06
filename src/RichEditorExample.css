@@ -14,6 +14,10 @@
   margin-top: 10px;
 }
 
+.RichEditor-editor .public-DraftEditor-content a:hover {
+  cursor: pointer;
+}
+
 .RichEditor-editor .public-DraftEditorPlaceholder-root,
 .RichEditor-editor .public-DraftEditor-content {
   margin: 0 -15px -15px;
