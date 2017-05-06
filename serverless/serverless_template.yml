@@ -1,0 +1,110 @@
+#
+# Noteless serverless config
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+
+service:                                   NotelessV1
+
+provider:
+  name:                                    aws
+  runtime:                                 nodejs4.3
+  stage:                                   prod
+  region:                                  us-east-1
+  cfLogs:                                  true
+  iamRoleStatements:
+   - Effect:                               "Allow"
+     Action:
+       - "dynamodb:*"
+     Resource:
+       - "arn:aws:dynamodb:us-east-1:*"
+
+custom:
+  OAUTH_GOOGLE_APP_KEY:                    "190810895374-8ku4clenkio7kcip93b0jbs1sq9qb6me.apps.googleusercontent.com"
+  version: v1
+
+functions:
+  getNotes:
+    handler:                               functions.getNotes
+    events:
+      - http:
+          path:                            ${self:custom.version}/notes
+          method:                          get
+          integration:                     lambda
+          cors:                            true
+  postNote:
+      handler:                             functions.saveOrUpdateNote
+      events:
+        - http:
+            path:                          ${self:custom.version}/notes
+            method:                        post
+            integration:                   lambda
+            cors:                          true
+  deleteNote:
+      handler:                             functions.deleteNote
+      events:
+        - http:
+            path:                          ${self:custom.version}/notes
+            method:                        delete
+            integration:                   lambda
+            cors:                          true
+
+resources:
+  Resources:
+    usersTable:
+      Type:                                AWS::DynamoDB::Table
+      Properties:
+        TableName:                         Notes-${self:custom.version}
+        AttributeDefinitions:
+          - AttributeName:                 userid
+            AttributeType:                 S
+          - AttributeName:                 clientUuid
+            AttributeType:                 S
+        KeySchema:
+          - AttributeName:                 userid
+            KeyType:                       HASH
+          - AttributeName:                 clientUuid
+            KeyType:                       RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits:               1
+          WriteCapacityUnits:              1
+        # http://forum.serverless.com/t/dynamodb-streams-creation/792/2
+        StreamSpecification:
+          StreamViewType:                  NEW_AND_OLD_IMAGES
+    # https://github.com/serverless/serverless/issues/2359
+    ApiGatewayMethodV1NotesPost:
+        Type:                              "AWS::ApiGateway::Method"
+        Properties:
+          AuthorizationType:               "AWS_IAM"
+    ApiGatewayMethodV1NotesGet:
+        Type:                              "AWS::ApiGateway::Method"
+        Properties:
+          AuthorizationType:               "AWS_IAM"
+    ApiGatewayMethodV1NotesDelete:
+        Type:                              "AWS::ApiGateway::Method"
+        Properties:
+          AuthorizationType:               "AWS_IAM"
+    notelessV1GoogleIdentityRole:
+      Type:                                AWS::IAM::Role
+      Properties:
+        RoleName:                          notelessV1GoogleIdentityRole
+        Policies:
+          - PolicyName:                    accessApiGateway
+            PolicyDocument:
+              Version:                     '2012-10-17'
+              Statement:
+                - Effect:                  Allow
+                  Action:
+                    - execute-api:Invoke
+                  Resource:                arn:aws:execute-api:*:*:*
+        AssumeRolePolicyDocument:
+          Version:                         '2012-10-17'
+          Statement:
+            - Effect:                      Allow
+              Principal:
+                Federated:                 accounts.google.com
+              Action:                      sts:AssumeRoleWithWebIdentity
+              Condition:
+                StringEquals:
+                  accounts.google.com:aud: ${self:custom.OAUTH_GOOGLE_APP_KEY}

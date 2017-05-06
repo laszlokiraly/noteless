@@ -1,0 +1,34 @@
+{
+  "name": "comments-showcase",
+  "version": "0.1.0",
+  "private": true,
+  "lint": "eslint --ext .js,.jsx .",
+  "dependencies": {
+    "aws-api-gateway-client": "^0.2.3",
+    "aws-mqtt-client": "0.0.5",
+    "aws-sdk": "^2.48.0",
+    "draft-js": "^0.10.0",
+    "draft-js-export-html": "^0.5.2",
+    "draft-js-import-html": "^0.3.2",
+    "firebase": "^3.9.0",
+    "immutability-helper": "^2.2.0",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4",
+    "react-google-login": "^2.8.9",
+    "sanitize-html": "^1.14.1"
+  },
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-config-formidable": "^2.0.1",
+    "eslint-plugin-filenames": "^1.2.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-react": "^6.10.3",
+    "react-scripts": "0.9.5"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}

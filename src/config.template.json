@@ -1,0 +1,26 @@
+{
+  "**** PROVIDER ****": "AWS",
+  "PROVIDER": "AWS",
+
+  "**** OAUTH ****": "",
+  "OAUTH": {
+    "GOOGLE": {
+      "APP_KEY": ""
+    }
+  },
+
+  "**** AWS ****": "",
+
+  "AWS": {
+    "REGION": "",
+    "COGNITO": {
+      "IDENTITY_POOL_ID": ""
+    },
+    "GOOGLE": {
+      "ROLE_ARN": ""
+    },
+    "FUNCTIONS": {
+      "INVOKE_URL": ""
+    }
+  }
+}

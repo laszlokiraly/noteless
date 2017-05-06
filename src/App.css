@@ -1,0 +1,185 @@
+.App-logo .logo {
+  padding: 0px;
+  margin-top: 10px;
+  max-width: 300px;
+  overflow: hidden;
+}
+
+.App {
+  text-align: center;
+  padding: 10px;
+  font-family: 'Helvetica';
+}
+
+.App-intro {
+  font-size: large;
+}
+
+.App ul {
+  list-style-type: circle;
+  overflow: hidden;
+  padding: 0px 10px;
+  margin-top: 0;
+}
+
+.App ul li .key {
+  text-align: right;
+}
+
+
+button, input {
+  padding: 3px 6px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 12px;
+  font-weight: bold;
+  font-family: sans-serif;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+.action-button {
+  background-color: #222;
+  color: yellow;
+  border: 1px solid yellow;
+}
+
+.login-button, .logout-button, .add-note button, .delete-note, .note-tab {
+  display: inline-block;
+  background: white;
+  color: black;
+  border-radius: 0px;
+  border: thin solid #888;
+  white-space: nowrap;
+}
+
+.add-note button, .delete-note {
+  color: #FFF;
+  background-color: #ADF;
+}
+
+.note-tab {
+  color: #ADF;
+  background-color: #000;
+  border-color: #FFF;
+}
+
+.login-button:hover, .logout-button:hover, .add-note, .delete-note, .note-title input:hover {
+  cursor: pointer;
+}
+
+.logout-button {
+  color: grey;
+}
+
+.add-note {
+  float: left;
+  width: 50px;
+  text-align: left;
+}
+
+.notes-tabs {
+  float: left;
+  text-align: center;
+  margin: 0 25px;
+}
+
+.login-out {
+  float: right;
+  width: 150px;
+  text-align: right;
+}
+
+.CommentList {
+  text-align: left;
+  font-family: 'Georgia', serif;
+  border: 1px solid #ddd;
+  margin: 5px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.App .CommentListColumn-1 {
+  float: left;
+  width: 100%;
+}
+
+.App .CommentListColumn-2 {
+  float: left;
+  width: 50%;
+}
+
+/* i want to see two columns on my small iphone 5s */
+@media (max-width: 567px) {
+  .App .CommentListColumn-2 {
+    float: left;
+    width: 100%;
+  }
+}
+
+.CommentList .ProviderTitle, .note-title {
+  text-align: center;
+  background: linear-gradient(to right, #ADF, #000, #ADF);
+  font-family: 'Helvetica';
+  font-size: 14px;
+  padding: 2px 0px;
+  font-weight: bold;
+  color: #ADF;
+}
+
+.App .note-title {
+  margin: 0px 5px;
+}
+
+.App .note-title input {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font-family: 'Helvetica';
+  font-size: 14px;
+  background-color: #000;
+  border-radius: 0;
+  cursor: default;
+  color: #ADF;
+  box-shadow: none;
+  font-weight: bold;
+}
+
+.App .note-title input:hover, .App .note-title input:focus {
+  background-color: #FFF;
+  color: #000;
+}
+
+.provider {
+  color: #7DF;
+}
+
+.CommentList .empty {
+  text-align: center;
+  margin: 10px;
+}
+
+.CommentList .key {
+  padding-right: 10px;
+  color: #666;
+  height: 100%;
+  vertical-align: top;
+}
+
+.CommentList .value {
+  display: inline-block;
+}
+
+.CommentList .value .p {
+  margin: 0; padding: 0;
+}
+
+/* inspired by https://codepen.io/ibrahimjabbari/pen/ozinB */
+hr.comment-hr {
+  border: 0;
+  height: 1px;
+  background: linear-gradient(to right, #FFF, #ADF, #FFF);
+}
