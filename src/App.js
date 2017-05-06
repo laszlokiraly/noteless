@@ -232,7 +232,10 @@ class App extends Component {
             this.editorComp.setContent("");
           }
           this.removeNoteFromNotes(this.selectedNote);
-          this.setState({ intervalFun: setInterval(this.editorComp.syncContent, 20000) });
+          this.setState({
+            intervalFun: setInterval(this.editorComp.syncContent,
+              APPCONFIG.NOTELESS.AUTOSAVE_INTERVAL_IN_SECONDS * 1000)
+          });
         });
       }).catch((error) => {
         ConsoleLogger.dir(error);

@@ -22,5 +22,10 @@
     "FUNCTIONS": {
       "INVOKE_URL": ""
     }
+  },
+
+  "**** APPLICATION SETTINGS ****": "",
+  "NOTELESS": {
+    "AUTOSAVE_INTERVAL_IN_SECONDS": 180
   }
 }
