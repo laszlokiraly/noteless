@@ -15,11 +15,15 @@
   font-size: large;
 }
 
-.App ul {
+.App .CommentList ul {
   list-style-type: circle;
   overflow: hidden;
   padding: 0px 10px;
   margin-top: 0;
+}
+
+.App .CommentList ul li:hover {
+  cursor: pointer;
 }
 
 .App ul li .key {
