@@ -26,7 +26,8 @@
     "eslint-plugin-filenames": "^1.2.0",
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-react": "^6.10.3",
-    "react-scripts": "0.9.5"
+    "react-scripts": "0.9.5",
+    "why-did-you-update": "0.0.8"
   },
   "scripts": {
     "start": "react-scripts start",
