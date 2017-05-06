@@ -14,6 +14,13 @@ import update from "immutability-helper";
 import NotesTab from "./NotesTab";
 import AlertContainer from "react-alert";
 
+const enableWhyDidYouUpdate = false;
+
+if (enableWhyDidYouUpdate && process.env.NODE_ENV !== "production") {
+  const { whyDidYouUpdate } = require("why-did-you-update");
+  whyDidYouUpdate(React);
+}
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -50,7 +57,7 @@ class App extends Component {
 
   alertNoteSaved(title) {
     if (!title || title === "") {
-      title = "newly created note";
+      title = "note without title";
     }
     this.msg.show(`${title} saved`, {
       time: 3000,
@@ -63,6 +70,16 @@ class App extends Component {
       title = "note without title";
     }
     this.msg.show(`${title} deleted`, {
+      time: 3000,
+      type: "success"
+    });
+  }
+
+  alertNoteClicked(title) {
+    if (!title || title === "") {
+      title = "note without title";
+    }
+    this.msg.show(`${title} selected`, {
       time: 3000,
       type: "success"
     });
@@ -86,17 +103,33 @@ class App extends Component {
   }
 
   handleTitleChanged(event) {
+    const oldTitle = this.selectedNote.title;
+    const newTitle = this.inputTitle.value;
     const selectedNote = update(this.selectedNote,
-      { title: { $set: this.inputTitle.value } }
+      {
+        title: { $set: newTitle },
+        content: { $set: this.editorComp.getContent() }
+      }
     );
-
-    this.setState({
-      notes: this.updateNoteInNotes(selectedNote)
-    });
 
     this.setSelectedNote(selectedNote);
 
-    this.editorComp.syncContent(true);
+    this.notesApi.post(selectedNote).then(() => {
+      if (this.state.loggedIn === false) {
+        return;
+      }
+      const hasOldTitle = oldTitle !== undefined && oldTitle !== null && oldTitle !== "";
+      this.msg.show(`${ hasOldTitle ? oldTitle : "empty title" } was updated to ${newTitle !== "" ? newTitle : "empty title"}`, {
+        time: 3000,
+        type: "success"
+      });
+    }).catch((error) => {
+      if (error.status === 403) {
+        ModalAlert.alert("Please login first");
+      }
+      ModalAlert.alert("Changing of title failed. Please try again later.");
+      ConsoleLogger.error(`${error}`);
+    });
   }
 
   findNote(clientUuid) {
@@ -304,6 +337,7 @@ class App extends Component {
     this.editorComp.setContent(newSelectedNote.content);
     this.setSelectedNote(newSelectedNote);
     this.updateSelectedNote(oldSelectedNote, newSelectedNote);
+    this.alertNoteClicked(newSelectedNote.title);
   }
 
   handleDeleteNoteClicked(key) {
