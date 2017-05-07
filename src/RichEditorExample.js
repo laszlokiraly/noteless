@@ -116,15 +116,50 @@ class RichEditorExample extends React.Component {
   }
 
   resetContent() {
-    const editorState = EditorState.push(this.state.editorState, ContentState.createFromText(""));
+    const editorState = EditorState.set(
+      EditorState.createEmpty(),
+      {
+        decorator: this.state.editorState._immutable.decorator,
+        currentContent: ContentState.createFromText("")
+      }
+      );
     this.setState({ editorState });
   }
 
+  // could not find a cleaner solution for setting directly newcontent with a clean editor state
   setContent(content) {
-    const editorState = EditorState.push(this.state.editorState, stateFromHTML(content));
-    this.setState({ editorState });
+    const editorState = EditorState.set(
+      EditorState.createEmpty(),
+      {
+        decorator: this.state.editorState._immutable.decorator,
+        currentContent: ContentState.createFromText("")
+      }
+      );
+    this.setState({ editorState: EditorState.push(editorState, stateFromHTML(content)) });
   }
 
+/*
+// cleaner behavior for setting content, but requires undo to be turned off, which is not acceptable
+resetContent() {
+  this._setContentState(ContentState.createFromText(""));
+}
+
+setContent(content) {
+  this._setContentState(stateFromHTML(content));
+}
+
+_setContentState(newContentState) {
+  this.setState({
+    editorState: EditorState.push(EditorState.create(
+      {
+        allowUndo: false,
+        decorator: this.state.editorState._immutable.decorator,
+        currentContent: ContentState.createFromText("")
+      }),
+      newContentState)
+  });
+}
+*/
   render() {
     const { editorState } = this.state;
 
