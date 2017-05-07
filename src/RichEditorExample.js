@@ -21,14 +21,16 @@ const styleMap = {
 };
 
 const linkifyPlugin = createLinkifyPlugin({
-  component: (props) => (
-    // eslint-disable-next-line no-alert, jsx-a11y/anchor-has-content
-    <a {...props} onClick={(event) => {
-      window.open(event.target.textContent, "_blank");
+  component: (props) => {
+    const { contentState, ...rest } = props;
+    return (
+    <a {...rest} onClick={() => {
+      window.open(rest.href, "_blank");
     }}
-    />
-  )
+    />);
+  }
 });
+
 const plugins = [linkifyPlugin];
 
 function getBlockStyle(block) {
