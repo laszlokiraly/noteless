@@ -1,9 +1,7 @@
 import React, { Component } from "react";
 import "./App.css";
-import GoogleUtil from "./GoogleUtil";
-import AwsUtil from "./AwsUtil";
 import APPCONFIG from "./config.json";
-import GoogleLogin from "react-google-login";
+import Login from "./Login";
 import RichEditorExample from "./RichEditorExample";
 import NotesList from "./NotesList";
 import NotesApiFactory from "./NotesApiFactory";
@@ -14,22 +12,18 @@ import update from "immutability-helper";
 import NotesTab from "./NotesTab";
 import AlertContainer from "react-alert";
 
-const enableWhyDidYouUpdate = false;
-
-if (enableWhyDidYouUpdate && process.env.NODE_ENV !== "production") {
-  const { whyDidYouUpdate } = require("why-did-you-update");
-  whyDidYouUpdate(React);
-}
-
 class App extends Component {
   constructor(props) {
     super(props);
     this.resetState = this.resetState.bind(this);
-    this.handleResponseGoogle = this.handleResponseGoogle.bind(this);
-    this.handleResponseGoogleFailure = this.handleResponseGoogleFailure.bind(this);
-    this.handleSignoutFromGoogle = this.handleSignoutFromGoogle.bind(this);
+
     this.handleTitleChanged = this.handleTitleChanged.bind(this);
     this.handleAddNote = this.handleAddNote.bind(this);
+
+    this.handleLoggedIn = this.handleLoggedIn.bind(this);
+    this.handleLoginFailed = this.handleLoginFailed.bind(this);
+    this.handleBeforeLogOut = this.handleBeforeLogOut.bind(this);
+    this.handleLoggedOut = this.handleLoggedOut.bind(this);
 
     this.updateNoteInNotes = this.updateNoteInNotes.bind(this);
     this.findNote = this.findNote.bind(this);
@@ -81,7 +75,7 @@ class App extends Component {
     }
     this.msg.show(`${title} selected`, {
       time: 3000,
-      type: "success"
+      type: "info"
     });
   }
 
@@ -91,6 +85,54 @@ class App extends Component {
 
   componentWillUnmount() {
     clearInterval(this.state.intervalFun);
+  }
+
+  handleBeforeLogOut() {
+    this.editorComp.syncContent();
+  }
+
+  handleLoginFailed() {
+    this.msg.show("login failed", {
+      time: 5000,
+      type: "error"
+    });
+    this.resetState();
+  }
+
+  handleLoggedOut() {
+    this.msg.show(`${this.state.user.email} logged out`, {
+      time: 5000,
+      type: "success"
+    });
+    this.resetState();
+  }
+
+  handleLoggedIn(user) {
+    this.setState({ loggedIn: true, user });
+
+    this.msg.show(`${user.email} logged in`, {
+      time: 5000,
+      type: "success"
+    });
+
+    this.notesApi.getAll().then((notes) => {
+      notes.map((note) => {
+        return this.correct(note);
+      });
+      this.setState({ notes, loggedIn: true });
+      if (notes.length > 0) {
+        this.setSelectedNote(notes[0]);
+        this.editorComp.setContent(notes[0].content);
+      } else {
+        this.selectedNote = this.createAndInsertNewNote("");
+        this.editorComp.setContent("");
+      }
+      this.removeNoteFromNotes(this.selectedNote);
+      this.setState({
+        intervalFun: setInterval(this.editorComp.syncContent,
+          APPCONFIG.NOTELESS.AUTOSAVE_INTERVAL_IN_SECONDS * 1000)
+      });
+    });
   }
 
   // http://blog.sodhanalibrary.com/2016/07/detect-ctrl-c-and-ctrl-v-and-ctrl-s.html
@@ -115,9 +157,6 @@ class App extends Component {
     this.setSelectedNote(selectedNote);
 
     this.notesApi.post(selectedNote).then(() => {
-      if (this.state.loggedIn === false) {
-        return;
-      }
       const hasOldTitle = oldTitle !== undefined && oldTitle !== null && oldTitle !== "";
       this.msg.show(`${ hasOldTitle ? oldTitle : "empty title" } was updated to ${newTitle !== "" ? newTitle : "empty title"}`, {
         time: 3000,
@@ -194,10 +233,10 @@ class App extends Component {
     const selectedNote = this.selectedNote;
 
     this.notesApi.post(selectedNote).then((response) => {
+      this.alertNoteSaved(selectedNote.title);
       if (this.state.loggedIn === false) {
         return;
       }
-      this.alertNoteSaved(selectedNote.title);
       const responseNote = response.data.body;
       this.correct(responseNote);
       if (this.selectedNote.clientUuid === responseNote.clientUuid) {
@@ -268,18 +307,6 @@ class App extends Component {
     this.setState({ notes });
   }
 
-  handleSignoutFromGoogle() {
-    this.editorComp.syncContent();
-    GoogleUtil.signout().then(() => {
-      this.resetState();
-      AwsUtil.resetAWSLogin();
-    });
-  }
-
-  handleResponseGoogleFailure(error) {
-    ConsoleLogger.error(`${error}`);
-  }
-
   correct(note) {
     if (note.title === undefined) {
       note.title = "";
@@ -289,41 +316,10 @@ class App extends Component {
     }
   }
 
-  handleResponseGoogle(authResult) {
-    const result = GoogleUtil.handleResponse(authResult);
-    if (result === undefined || result === false) {
-      this.resetState();
-      ModalAlert.alert("Login was not successful");
-    } else {
-      AwsUtil.bindOpenId(result.idToken).then(() => {
-        this.notesApi.getAll().then((notes) => {
-          notes.map((note) => {
-            return this.correct(note);
-          });
-          this.setState({ notes, loggedIn: true });
-          if (notes.length > 0) {
-            this.setSelectedNote(notes[0]);
-            this.editorComp.setContent(notes[0].content);
-          } else {
-            this.selectedNote = this.createAndInsertNewNote("");
-            this.editorComp.setContent("");
-          }
-          this.removeNoteFromNotes(this.selectedNote);
-          this.setState({
-            intervalFun: setInterval(this.editorComp.syncContent,
-              APPCONFIG.NOTELESS.AUTOSAVE_INTERVAL_IN_SECONDS * 1000)
-          });
-        });
-      }).catch((error) => {
-        ConsoleLogger.dir(error);
-        ModalAlert.alert("Something went wrong while binding open id to aws credentials!");
-      });
-    }
-  }
-
   resetState() {
     this.setState({
       loggedIn: false,
+      user: { email: "" },
       notes: []
     });
     if (this.editorComp) {
@@ -348,10 +344,10 @@ class App extends Component {
     // delete function
     const noteToDelete = this.findNote(key);
     this.notesApi.delete(noteToDelete).then(() => {
+      this.alertNoteDeleted(noteToDelete.title);
       if (this.state.loggedIn === false) {
         return;
       }
-      this.alertNoteDeleted(noteToDelete.title);
       this.deleteNoteFromNotes(noteToDelete);
     }).catch((error) => {
       ModalAlert.alert("Delete failed. Please try again later.");
@@ -362,7 +358,7 @@ class App extends Component {
   render() {
     return (
       <div className="App" onKeyDown={this.handleKeyDown}>
-
+        <AlertContainer ref={(ref) => { this.msg = ref; }} {...this.alertOptions} />
         <div style={{ clear: "both" }}>
           {this.state.loggedIn ?
             <div className="add-note">
@@ -373,30 +369,12 @@ class App extends Component {
             : ""
           }
           {this.state.loggedIn ?
-            <AlertContainer ref={(ref) => { this.msg = ref; }} {...this.alertOptions} /> : ""
-          }
-          {this.state.loggedIn ?
             <NotesTab list={this.state.notes} onTabClicked={this.handleNoteClicked}/> : ""
           }
-          <div className="login-out">
-            {!this.state.loggedIn
-              ? <GoogleLogin
-                className="login-button"
-                clientId={APPCONFIG.OAUTH.GOOGLE.APP_KEY}
-                buttonText="Login"
-                onSuccess={this.handleResponseGoogle}
-                onFailure={this.handleResponseGoogleFailure}
-                offline={false}
-                autoLoad={false}
-                scope="email"
-                >
-                <span>Login with Google</span>
-                </GoogleLogin>
-              : <button className="button logout-button" onClick={this.handleSignoutFromGoogle}>
-                  <span>Logout</span>
-                </button>
-            }
-          </div>
+          <Login
+            onLoginSuccess={this.handleLoggedIn} onLoginFailure={this.handleLoginFailed}
+            onBeforeLogOut={this.handleBeforeLogOut} onLoggedOut={this.handleLoggedOut}
+          />
         </div>
         {this.state.loggedIn
           ? <div style={{ clear: "both" }}>
