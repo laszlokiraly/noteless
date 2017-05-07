@@ -1,11 +1,9 @@
 {
   "name": "comments-showcase",
   "version": "0.1.0",
-  "private": true,
   "lint": "eslint --ext .js,.jsx .",
   "dependencies": {
     "aws-api-gateway-client": "^0.2.3",
-    "aws-mqtt-client": "0.0.5",
     "aws-sdk": "^2.48.0",
     "draft-js": "^0.10.0",
     "draft-js-export-html": "^0.5.2",
@@ -26,8 +24,7 @@
     "eslint-plugin-filenames": "^1.2.0",
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-react": "^6.10.3",
-    "react-scripts": "0.9.5",
-    "why-did-you-update": "0.0.8"
+    "react-scripts": "0.9.5"
   },
   "scripts": {
     "start": "react-scripts start",
