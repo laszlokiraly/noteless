@@ -15,7 +15,7 @@ export default class NotesTab extends React.Component {
             <button className="button note-tab" key={item.clientUuid}
               onClick={this.handleNoteOnClick.bind(this, item.clientUuid)}
             >
-              { item.title }
+              { item.title === "" ? "\u00A0" : item.title }
             </button>
           );
         })}
