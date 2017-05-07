@@ -251,6 +251,7 @@ class App extends Component {
       if (error.status === 403) {
         ModalAlert.alert("Please login first");
       }
+      // token gone: {"message":"The security token included in the request is expired"}
       ModalAlert.alert("Send failed. Please try again later.");
       ConsoleLogger.error(`${error}`);
     });
@@ -350,6 +351,7 @@ class App extends Component {
       }
       this.deleteNoteFromNotes(noteToDelete);
     }).catch((error) => {
+      // token gone: {"message":"The security token included in the request is expired"}
       ModalAlert.alert("Delete failed. Please try again later.");
       ConsoleLogger.error(`${error}`);
     });
