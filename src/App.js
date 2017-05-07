@@ -176,19 +176,6 @@ class App extends Component {
     this.setState({ notes });
   }
 
-  updateSelectedNote(noteToAdd, noteToRemove) {
-    const notes = this.state.notes.filter((note) => {
-      if (note.clientUuid === noteToRemove.clientUuid ||
-        note.clientUuid === noteToAdd.clientUuid) {
-        return false;
-      } else {
-        return true;
-      }
-    });
-    notes.unshift(noteToAdd);
-    this.setState({ notes });
-  }
-
   removeNoteFromNotes(someNote) {
     const notes = this.state.notes.filter((note) => {
       if (note.clientUuid === someNote.clientUuid) {
@@ -243,15 +230,42 @@ class App extends Component {
     return newNote;
   }
 
+  handleNoteClicked(key) {
+    ConsoleLogger.log(`note ${key} was clicked`);
+    this.selectedNote = { ...this.selectedNote, content: this.editorComp.getContent() };
+    const oldSelectedNote = this.selectedNote;
+    this.editorComp.syncContent();
+    const newSelectedNote = this.findNote(key);
+    this.editorComp.setContent(newSelectedNote.content);
+    this.setSelectedNote(newSelectedNote);
+    this.updateSelectedNote(oldSelectedNote, newSelectedNote);
+    this.alertNoteClicked(newSelectedNote.title);
+  }
+
   handleAddNote(event) {
-    const oldSelectedNote = { ...this.selectedNote, content: this.editorComp.getContent() };
-    this.postNote(oldSelectedNote.content);
+    this.selectedNote = { ...this.selectedNote, content: this.editorComp.getContent() };
+    const oldSelectedNote = this.selectedNote;
+    this.editorComp.syncContent();
     this.editorComp.setContent("");
     const newNote = this.createAndInsertNewNote("");
     this.setSelectedNote(newNote);
     this.postNote("");
     this.setState({ notes: [oldSelectedNote, ...this.state.notes] });
     event.stopPropagation();
+  }
+
+
+  updateSelectedNote(noteToAdd, noteToRemove) {
+    const notes = this.state.notes.filter((note) => {
+      if (note.clientUuid === noteToRemove.clientUuid ||
+        note.clientUuid === noteToAdd.clientUuid) {
+        return false;
+      } else {
+        return true;
+      }
+    });
+    notes.unshift(noteToAdd);
+    this.setState({ notes });
   }
 
   handleSignoutFromGoogle() {
@@ -327,17 +341,6 @@ class App extends Component {
     if (this.inputTitle !== undefined && this.inputTitle !== null) {
       this.inputTitle.value = this.selectedNote.title;
     }
-  }
-
-  handleNoteClicked(key) {
-    ConsoleLogger.log(`note ${key} was clicked`);
-    this.editorComp.syncContent();
-    const oldSelectedNote = this.selectedNote;
-    const newSelectedNote = this.findNote(key);
-    this.editorComp.setContent(newSelectedNote.content);
-    this.setSelectedNote(newSelectedNote);
-    this.updateSelectedNote(oldSelectedNote, newSelectedNote);
-    this.alertNoteClicked(newSelectedNote.title);
   }
 
   handleDeleteNoteClicked(key) {
