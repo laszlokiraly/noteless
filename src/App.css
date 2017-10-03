@@ -78,20 +78,21 @@ button, input {
 }
 
 .add-note {
-  float: left;
-  width: 50px;
+  display: inline-block;
   text-align: left;
+  float: left;
 }
 
 .notes-tabs {
-  float: left;
   text-align: center;
-  margin: 0 25px;
+  width: 85%;
+  display: inline-block;
 }
 
 .login-out {
-  float: right;
+  display: inline-block;
   text-align: right;
+  float: right;
 }
 
 .CommentList {

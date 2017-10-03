@@ -72,7 +72,7 @@ export default class Login extends React.Component {
               <span>Login with Google</span>
             </GoogleLogin>
           : <button className="button logout-button" onClick={this.handleGoogleSignout}>
-              <span>Logout</span>
+              <span>bye</span>
             </button>
         }
       </div>

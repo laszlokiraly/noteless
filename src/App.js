@@ -365,7 +365,7 @@ class App extends Component {
           {this.state.loggedIn ?
             <div className="add-note">
               <button className="button" onClick={this.handleAddNote}>
-                <span>add</span>
+                <span>new</span>
               </button>
             </div>
             : ""
